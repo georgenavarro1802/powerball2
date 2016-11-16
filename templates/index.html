@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-10 col-md-10 text-center">
+            <div class="page-header">
+                <h2>{{ title }}</h2>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2">
+            <img src="/static/img/powerball.png"/>
+        </div>
+    </div>
+
+    <div class="row spaceuphalf">
+        <div class="col-lg-6 col-md-6">
+            <h3>
+                <i class="fa fa-user"></i> PLAYERS
+            </h3>
+
+            <table class="table table-responsive table-hover">
+                <thead>
+                <tr class="bigger">
+                    <th>Player</th>
+                    <th style="width: 10%; text-align: center">N1</th>
+                    <th style="width: 10%; text-align: center">N2</th>
+                    <th style="width: 10%; text-align: center">N3</th>
+                    <th style="width: 10%; text-align: center">N4</th>
+                    <th style="width: 10%; text-align: center">N5</th>
+                    <th style="width: 10%; text-align: center">POWB</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for p in players %}
+                    <tr class="bigger">
+                        <td>{{ p }}</td>
+                        <td class="text-center">{{ p.n1|floatformat:0 }}</td>
+                        <td class="text-center">{{ p.n2|floatformat:0 }}</td>
+                        <td class="text-center">{{ p.n3|floatformat:0 }}</td>
+                        <td class="text-center">{{ p.n4|floatformat:0 }}</td>
+                        <td class="text-center">{{ p.n5|floatformat:0 }}</td>
+                        <td class="text-center">{{ p.powb|floatformat:0 }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="10" class="alert alert-danger">
+                            <strong>INSERT PLAYERS</strong> to start testing the application
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="row">
+                <a href="/clean_data" class="btn btn-info btn-form tt" title="Delete all players to create new data" style="float: right; margin-left: 1em"><i class="fa fa-refresh"></i> Clean Data</a>
+                <a href="/add_player" class="btn btn-success btn-form tt" title="Create new player" style="float: right"><i class="fa fa-plus"></i> Add Player</a>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-md-6 text-center">
+            <h3><i class="fa fa-money"></i> WINNING NUMBER</h3>
+            <div class="text-center">
+                <ul id="circles">
+                    {% for n in favorite_numbers %}
+                        <li>
+                            <div class="circle tt" title="Number {{ n }}">
+                                <div>{{ n|floatformat:0 }}</div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                    <li>
+                        <div class="circle_red tt" title="Powerball">
+                            <div>{{ powerball_number|floatformat:0 }}</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

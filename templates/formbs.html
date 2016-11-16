@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block heading %}
+    <script>
+        $(function() {
+            {% block javascript %}
+            {% endblock %}
+
+            $("form").validationEngine({autoHidePrompt:true, autoHideDelay:1000 });
+
+            envioformulario = function(){
+                var valid = $("form").validationEngine('validate');
+                if (valid){
+                    $('.datepicker').css({"display": "none"});
+                    $('.bootstrap-timepicker-widget').css({"display": "none"});
+                    $('.controls input').each(function(){
+                        if ($(this).attr('type')=='text'){
+                            $(this).val($(this).val().trim());
+                        }
+                        if ($(this).attr('type')!='file'){
+                            if ($(this).css('text-transform')=='uppercase'){
+                                if ($(this).attr('type')!='password'){
+                                    $(this).val($(this).val().toUpperCase());
+                                }
+                            }
+                        }
+                    });
+                    var formdata = new FormData($("#formulario")[0]);
+                    $.ajax({
+                        type: "POST",
+                        url: "{% block formaction %}/{% endblock %}",
+                        data: formdata,
+                        success: function(data) {
+                            if (data.result == 'ok') {
+                                location.href = "{% block formdestination %}/{% endblock %}" + ((data.id)?data.id:"");
+                            }
+                            else if (data.result == 'bad_list'){
+                                location.href = data.destino;
+                            }
+                            else {
+                                $.unblockUI();
+                                smoke.alert(data.mensaje);
+                            }
+                        },
+                        error: function() {
+                            $.unblockUI();
+                            smoke.alert("Error al enviar los datos.");
+                        },
+                        dataType: "json",
+                        cache: false,
+                        contentType: false,
+                        processData: false
+                    });
+                } else {
+                    setTimeout(function() {
+                        $('.help-text').html("");
+                    }, 3500);
+                }
+            };
+
+            $("#formbutton").click(function(){
+                envioformulario();
+            });
+
+        });
+    </script>
+    {% block extraheading %}
+    {% endblock %}
+{% endblock %}
+
+{% block content %}
+    <div class='row spaceupbig'>
+        <div class='col-md-12'>
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            <i class="glyphicon glyphicon-pencil pull-right"></i>
+                            <h4>{% block form_title %}{% endblock %}</h4>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <form id="formulario" class='form-horizontal' enctype="multipart/form-data" autocomplete="off">
+                            {% block formextra %}
+                            {% endblock %}
+                            {% for field in form %}
+                                <div class="form-group">
+                                    <label for="id_{{ field.name }}" class="col-sm-3 control-label">{{ field.label }}</label>
+                                    <div class="col-sm-9">
+                                        {{ field }}
+                                        <p class="help-text">{{ field.help_text }} </p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            {% block formsuffix %}
+                            {% endblock %}
+                            <p style="text-align: right;">
+                                <a class="btn btn-success btn-form" id="formbutton"><i class="fa fa-save"></i> {% block buttonname %}Save{% endblock %}</a>
+                                <a href="{% block formback %}/{% endblock %}" class="btn btn-default btn-form"><i class="fa fa-arrow-left"></i> Cancel</a>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+    </div>
+{% endblock %}
